@@ -13,11 +13,8 @@ open import Symbols
 1A f g a = g (f a)
 
 -- (¬ A → A) → A
-itself : { A : Set } → A → A
-itself a = a
-
 1B : (A : Set) → (¬ A → A) → A
-1B A f = ∨-elim (LEM A) itself f
+1B A f = ∨-elim (LEM A) identity f
 
 -- A → (¬ A → B)
 1C : { A B : Set } → A → (¬ A → B)
@@ -57,4 +54,4 @@ helper : {A B : Set} → (¬ A → ¬ B) → B → ¬ A → A
 helper f b g = exnihilo ((f g) b)
 
 3C : (A B : Set) → (¬ A → ¬ B) → (B → A)
-3C A B f b = ∨-elim (LEM A) itself (helper f b)
+3C A B f b = ∨-elim (LEM A) identity (helper f b)

@@ -1,5 +1,8 @@
 module Symbols where
 
+identity : {A : Set} → A → A
+identity a = a
+
 {- AND -}
 data _∧_ (A B : Set) : Set where
   ∧-in : A → B → A ∧ B

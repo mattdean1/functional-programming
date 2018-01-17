@@ -47,11 +47,8 @@ appsame-check : {A : Set} → (l1 l2 l3 : List A)
                → istrue (length-check l1 l2)
                → istrue (length-check (append l1 l3) (append l2 l3))
 appsame-check nil       nil       nil       p   = ok
-appsame-check nil       (y :: ys) nil       ()
-appsame-check (x :: xs) nil       nil       ()
-appsame-check (x :: xs) (y :: ys) nil       p   = appsame-check xs ys nil p
-
 appsame-check nil       nil       (z :: zs) p   = appsame-check nil nil zs p
-appsame-check nil       (y :: ys) (z :: zs) ()
-appsame-check (x :: xs) nil       (z :: zs) ()
-appsame-check (x :: xs) (y :: ys) (z :: zs) p   = appsame-check xs ys (z :: zs) p
+appsame-check nil       (y :: ys) _       ()
+appsame-check (x :: xs) nil       _       ()
+appsame-check (x :: xs) (y :: ys) nil       p   = appsame-check xs ys nil p
+appsame-check (x :: xs) (y :: ys) l3        p   = appsame-check xs ys l3 p

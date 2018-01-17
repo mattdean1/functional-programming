@@ -42,24 +42,16 @@ appnil-proof nil = nils
 appnil-proof (x :: xs) = cons x xs x (append xs nil) (appnil-proof xs)
 
 
-h : (A : Set) → (l1 l2 : List A)
-    → istrue (length-check l1 l2)
-    → istrue (length-check (append l1 nil) (append l2 nil))
-h _ nil nil _ = ok
-h _ nil (y :: ys) ()
-h _ (y :: ys) nil ()
-h A (y :: ys) (z :: zs) p = h A ys zs p
-
 --  4. Check/prove that appending lists with the same length preserves length
-appsame-check : (A : Set) → (l1 l2 l3 : List A)
+appsame-check : {A : Set} → (l1 l2 l3 : List A)
                → istrue (length-check l1 l2)
                → istrue (length-check (append l1 l3) (append l2 l3))
-appsame-check A nil       nil       nil       p   = h A nil nil p
-appsame-check _ nil       (y :: ys) nil       ()
-appsame-check _ (x :: xs) nil       nil       ()
-appsame-check A (x :: xs) (y :: ys) nil       p   = h A (x :: xs) (y :: ys) p
+appsame-check nil       nil       nil       p   = ok
+appsame-check nil       (y :: ys) nil       ()
+appsame-check (x :: xs) nil       nil       ()
+appsame-check (x :: xs) (y :: ys) nil       p   = appsame-check xs ys nil p
 
-appsame-check A nil       nil       (z :: zs) p   = appsame-check A nil nil zs p
-appsame-check _ nil       (y :: ys) (z :: zs) ()
-appsame-check _ (x :: xs) nil       (z :: zs) ()
-appsame-check A (x :: xs) (y :: ys) (z :: zs) p   = appsame-check A xs ys (z :: zs) p
+appsame-check nil       nil       (z :: zs) p   = appsame-check nil nil zs p
+appsame-check nil       (y :: ys) (z :: zs) ()
+appsame-check (x :: xs) nil       (z :: zs) ()
+appsame-check (x :: xs) (y :: ys) (z :: zs) p   = appsame-check xs ys (z :: zs) p

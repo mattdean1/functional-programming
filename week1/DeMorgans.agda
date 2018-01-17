@@ -13,14 +13,8 @@ open import Symbols
     a) ¬(P ∨ Q) → ¬P ∧ ¬Q
     b) ¬P ∧ ¬Q → ¬(P ∨ Q)
 -}
-singleOrNegationL : {P Q : Set} → ¬ (P ∨ Q) → ¬ P
-singleOrNegationL f p = f (∨-inl p)
-
-singleOrNegationR : {P Q : Set} → ¬ (P ∨ Q) → ¬ Q
-singleOrNegationR f q = f (∨-inr q)
-
 1A : {P Q : Set} → ¬ (P ∨ Q) → (¬ P ∧ ¬ Q)
-1A f = ∧-in (singleOrNegationL f) (singleOrNegationR f)
+1A f = ∧-in (λ p → f (∨-inl p)) (λ q → f (∨-inr q))
 
 
 1B : {P Q : Set} → ¬ P ∧ ¬ Q → ¬ (P ∨ Q)
@@ -33,14 +27,10 @@ singleOrNegationR f q = f (∨-inr q)
     a) ¬(P ∧ Q) → ¬P ∨ ¬Q
     b) ¬P ∨ ¬Q → ¬(P ∧ Q)
 -}
-singleAndNegationL : {P Q : Set} → ¬ (P ∧ Q) → P → ¬ Q
-singleAndNegationL f p q = f (∧-in p q)
-
-disjIn : {P Q : Set} → (P → ¬ Q) → P → ¬ P ∨ ¬ Q
-disjIn f p = ∨-inr (f p)
-
 2A : (P Q : Set) → ¬ (P ∧ Q) → ¬ P ∨ ¬ Q
-2A P Q f = ∨-elim (LEM P) (disjIn (singleAndNegationL f)) ∨-inl
+2A P Q f = ∨-elim (LEM P) (λ p → ∨-inr (singleAndNegationL f p)) ∨-inl where
+  singleAndNegationL : {P Q : Set} → ¬ (P ∧ Q) → P → ¬ Q
+  singleAndNegationL f p q = f (∧-in p q)
 
 
 2B : {P Q : Set} → ¬ P ∨ ¬ Q → ¬ (P ∧ Q)

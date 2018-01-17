@@ -23,21 +23,15 @@ open import Symbols
 
 {- Lukasiewicz's second axiom system -}
 -- ((A → B) → C) → (¬ A → C)
-notAtoB : (A B : Set) → ¬ A → A → B
-notAtoB A B f a = exnihilo (f a)
-
 2A : (A B C : Set) → ((A → B) → C) → (¬ A → C)
-2A A B C f g = f (notAtoB A B g)
+2A A B C f notA = f (λ a → exnihilo (notA a))
 
 -- (¬ A → A) → A
 2B = 1B
 
 -- (¬ A → C) → ((B → C) → ((A → B) → C))
-intermediate : {A B C : Set} → (A → B) → (B → C) → (A → C)
-intermediate f g a = g (f a)
-
 2C : (A B C : Set) → (¬ A → C) → ((B → C) → ((A → B) → C))
-2C A B C f g h = ∨-elim (LEM A) (intermediate h g) f
+2C A B C f g h = ∨-elim (LEM A) (λ a → g (h a)) f
 
 
 {- Lukasiewicz's third axiom system -}
@@ -50,8 +44,5 @@ intermediate f g a = g (f a)
 3B f g a = f a (g a)
 
 -- (¬ A → ¬ B) → (B → A)
-helper : {A B : Set} → (¬ A → ¬ B) → B → ¬ A → A
-helper f b g = exnihilo ((f g) b)
-
 3C : (A B : Set) → (¬ A → ¬ B) → (B → A)
-3C A B f b = ∨-elim (LEM A) identity (helper f b)
+3C A B f b = ∨-elim (LEM A) identity (λ notA → exnihilo ((f notA) b))

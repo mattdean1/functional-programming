@@ -6,11 +6,8 @@ open import Symbols
 -- postulate DNE : {A : Set} → ¬ (¬ A) → A
 
 -- LEM → DNE
-h : {A : Set} → ¬ (¬ A) → ¬ A → A
-h doubleNeg notA = exnihilo (doubleNeg notA)
-
 LD : {A : Set} → A ∨ ¬ A → (¬ (¬ A) → A)
-LD disj f = ∨-elim disj identity (h f)
+LD disj f = ∨-elim disj identity (λ notA → exnihilo (f notA))
 
 -- DNE → LEM
 DL : {A : Set} → (¬ (¬ A) → A) → A ∨ ¬ A

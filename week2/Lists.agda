@@ -51,3 +51,11 @@ appsame-check nil       nil       (z :: zs) p   = appsame-check nil nil zs p
 appsame-check nil       (y :: ys) _       ()
 appsame-check (x :: xs) nil       _       ()
 appsame-check (x :: xs) (y :: ys) l3        p   = appsame-check xs ys l3 p
+
+appsame-proof : {A : Set} → (l1 l2 l3 : List A)
+              → (length-proof l1 l2)
+              → (length-proof (append l1 l3) (append l2 l3))
+appsame-proof nil         nil         nil       nils               = nils
+appsame-proof nil         nil         (z :: zs) nils               = cons z zs z zs (appsame-proof nil nil zs nils)
+appsame-proof (.x :: .xs) (.y :: .ys) nil       (cons x xs y ys p) = cons x (append xs nil) y (append ys nil) (appsame-proof xs ys nil p)
+appsame-proof (.x :: .xs) (.y :: .ys) l3        (cons x xs y ys p) = cons x (append xs l3) y (append ys l3) (appsame-proof xs ys l3 p)

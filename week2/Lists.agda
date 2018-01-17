@@ -50,5 +50,4 @@ appsame-check nil       nil       nil       p   = ok
 appsame-check nil       nil       (z :: zs) p   = appsame-check nil nil zs p
 appsame-check nil       (y :: ys) _       ()
 appsame-check (x :: xs) nil       _       ()
-appsame-check (x :: xs) (y :: ys) nil       p   = appsame-check xs ys nil p
 appsame-check (x :: xs) (y :: ys) l3        p   = appsame-check xs ys l3 p

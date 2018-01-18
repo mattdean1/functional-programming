@@ -1,22 +1,6 @@
 module Lists where
 
-data Bool : Set where
-  true  : Bool
-  false : Bool
-
-data istrue : Bool → Set where
-  ok : istrue true
-
-data List (A : Set) : Set where
-  nil   : List A
-  _::_  : (x : A) → List A → List A
-infixr 4 _::_
-
---  0. Write an append function on lists
-append : ∀ {A} → List A → List A → List A
-append nil       l   = l
-append (x :: xs) l   = x :: (append xs l)
-
+open import Symbols
 
 -- 1. Write a function that checks two lists have the same length
 length-check : ∀ {A} → List A → List A → Bool

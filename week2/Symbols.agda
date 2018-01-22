@@ -33,3 +33,9 @@ append (x :: xs) l   = x :: (append xs l)
 length : ∀ {A} → List A → Nat
 length nil = zero
 length (x :: xs) = succ (length xs)
+
+
+{- Equality -}
+data _≡_ {A : Set} : A → A → Set where
+  refl : (x : A) → x ≡ x
+infix 0 _≡_

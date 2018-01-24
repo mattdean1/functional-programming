@@ -21,12 +21,40 @@ append-nil (x :: xs) = ≡-cong ((λ z → x :: z)) (append-nil xs)
   ≡ l
 -}
 reverse-inv : ∀ {A} → (l₁ : List A) → reverse (reverse l₁) ≡ l₁
-reverse-inv nil = refl nil
+reverse-inv nil       = refl nil
 reverse-inv (x :: xs) = ≡-trans (a≡b x (reverse xs)) (b≡c x xs)
   where
         a≡b : ∀ {A} → (x : A) → (l₂ : List A) → reverse (l₂ ++ [ x ]) ≡ x :: reverse l₂
-        a≡b x nil = refl [ x ]
+        a≡b x nil       = refl [ x ]
         a≡b x (y :: ys) = ≡-cong (λ z → z ++ [ y ]) (a≡b x ys)
 
         b≡c : ∀ {A} → (x : A) → (l₃ : List A) → x :: reverse (reverse l₃) ≡ x :: l₃
         b≡c x l₃ = ≡-cong (λ z → x :: z) (reverse-inv l₃)
+
+
+-- rev-append and ++ have some kind of associativity
+rev-append-++-assoc : ∀ {A}
+                      → (l₁ l₂ l₃ : List A)
+                      → (rev-append l₁ l₂) ++ l₃ ≡ rev-append l₁ (l₂ ++ l₃)
+rev-append-++-assoc nil       l₂ l₃ = refl (l₂ ++ l₃)
+rev-append-++-assoc (x :: xs) l₂ l₃ = rev-append-++-assoc xs (x :: l₂) l₃
+
+{-
+  Proof that fast-reverse is equivalent to reverse
+
+    reverse l
+  ≡ reverse (x :: xs)
+  ≡ (reverse xs) ++ [ x ]           - definition of reverse
+  ≡ rev-append xs        [ x ]      - p0
+  ≡ rev-append xs        (x :: nil) - definition of [ ]
+  ≡ rev-append (x :: xs) nil        - definition of rev-append
+  ≡ fast-reverse (x :: xs)          - definition of fast-reverse
+  ≡ fast-reverse l
+-}
+fast-reverse≡reverse : ∀ {A} → (l₁ : List A) → reverse l₁ ≡ fast-reverse l₁
+fast-reverse≡reverse nil       = refl nil
+fast-reverse≡reverse (x :: xs) = p0 xs [ x ]
+  where
+    p0 : ∀ {A} → (l₂ l₃ : List A) → (reverse l₂) ++ l₃ ≡ rev-append l₂ l₃
+    p0 nil       l₃ = refl l₃
+    p0 (y :: ys) l₃ = ≡-trans (≡-cong (λ z → z ++ l₃) (p0 ys [ y ])) (rev-append-++-assoc ys [ y ] l₃)

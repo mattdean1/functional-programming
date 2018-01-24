@@ -29,3 +29,10 @@ nil ++ l = l
 reverse : ∀ {A} → List A → List A
 reverse nil = nil
 reverse (x :: xs) = (reverse xs) ++ [ x ]
+
+rev-append : ∀ {A} → (l₁ l₂ : List A) → List A
+rev-append nil l = l
+rev-append (x :: xs) l = rev-append xs (x :: l)
+
+fast-reverse : ∀ {A} → List A → List A
+fast-reverse l = rev-append l nil

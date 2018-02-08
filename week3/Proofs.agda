@@ -1,6 +1,7 @@
 module Proofs where
 
-open import Symbols
+open import Types.Equality
+open import Types.List
 
 --appending nil is a noop
 append-nil : ∀ {A} → (l : List A) → l ++ nil ≡ l

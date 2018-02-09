@@ -6,6 +6,14 @@ data Int : Set where
   pos : Nat → Int
   neg : Nat → Int -- neg n = -(n+1)
 
+{-
+  We must have a 1 to 1 mapping between Nat and Int
+    so 0 ∈ Nat => 0, -1 ∈ Int
+       1 ∈ Nat => 1, -2 ∈ Int
+
+  If we instead defined neg n = -n we would have two constructors for 0 ∈ Int
+-}
+
 negate : Int → Int
 negate (pos zero) = pos zero
 negate (pos (succ n)) = neg n

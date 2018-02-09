@@ -15,6 +15,13 @@ infixl 5 _+_
 +-unit2 zero = refl zero
 +-unit2 (succ x) = ≡-cong succ (+-unit2 x)
 
++-unit2p : {a b : Nat} → a ≡ b → a + zero ≡ b
++-unit2p {.x} {.x} (refl x) = +-unit2 x
+
+-- adding n to both sides preserves equality
++-cong : {a b : Nat} → a ≡ b → (n : Nat) → a + n ≡ b + n
++-cong p n = ≡-cong (λ x → x + n) p
+
 +-succ1 : (a b : Nat) → a + succ b ≡ succ (a + b)
 +-succ1 zero b = refl (succ b)
 +-succ1 (succ a) b = ≡-cong succ (+-succ1 a b)

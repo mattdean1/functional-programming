@@ -39,15 +39,17 @@ Show that (Nat, +, 0, x, 1) forms a semi-ring
     Identity
       ∃ i ∈ G, ∀ a ∈ G, a ∘ i ≡ i ∘ a ≡ a
     Inverse
-      ∀ a ∈ G, ∃ a⁻¹ ∈ G, a ∘ a⁻¹ ≡ a⁻¹ ∘ a ≡ i where i is the identity ep1ent
+      ∀ a ∈ G, ∃ a⁻¹ ∈ G, a ∘ a⁻¹ ≡ a⁻¹ ∘ a ≡ i where i is the identity element
 
   An Abelian group is also commutative:
     ∀ (a b ∈ G), a ∘ b ≡ b ∘ a
 -}
 
--- closure is satisfied by the type signature of +ᵢ
+-- Closure is satisfied by the type signature of +ᵢ
+-- _+ᵢ_ : Int → Int → Int
 
--- pos zero is the identity element
+-- Identity
+-- the identity element is pos zero
 z+-id1 : (a : Int) → a +ᵢ pos zero ≡ a
 z+-id1 (pos x) = ≡-cong2 (λ q → pos q) (+-unit2 x)
 z+-id1 (neg x) = refl (neg x)
@@ -56,6 +58,28 @@ z+-id2 : (a : Int) → (pos zero) +ᵢ a ≡ a
 z+-id2 (pos x) = refl (pos x)
 z+-id2 (neg x) = refl (neg x)
 
+-- Inverse
+-- the inverse of x is negate x
+z+-inv1 : (a : Int) → a +ᵢ negate a ≡ pos zero
+z+-inv1 (pos zero) = refl (pos zero)
+z+-inv1 (pos (succ x)) = z+-inv1 (neg x)
+z+-inv1 (neg zero) = refl (pos zero)
+z+-inv1 (neg (succ x)) = z+-inv1 (neg x)
+
+z+-inv2 : (a : Int) → negate a +ᵢ a ≡ pos zero
+z+-inv2 (pos zero) = refl (pos zero)
+z+-inv2 (pos (succ x)) = z+-inv2 (neg x)
+z+-inv2 (neg zero) = refl (pos zero)
+z+-inv2 (neg (succ x)) = z+-inv2 (neg x)
+
+-- Commutativity
+z+-comm : (a b : Int) → a +ᵢ b ≡ b +ᵢ a
+z+-comm (pos x) (pos y) = ≡-cong2 (λ q → pos q) (+-comm x y)
+z+-comm (pos x) (neg y) = refl (x - succ y)
+z+-comm (neg x) (pos y) = refl (y - succ x)
+z+-comm (neg x) (neg y) = ≡-cong2 (λ q → neg (q + succ zero)) (+-comm x y)
+
+-- Associativity
 z+-assoc : (a b c : Int) → (a +ᵢ b) +ᵢ c ≡ a +ᵢ (b +ᵢ c)
 z+-assoc (pos x) (pos y) (pos z) = ≡-cong2 (λ q → pos q) (+-assoc x y z)
 z+-assoc (pos x) (pos y) (neg z) = p0 x y (succ z)
@@ -205,19 +229,15 @@ z+-assoc (neg x) (neg y) (pos z) = p0 x y z
   p0 x y zero = refl (neg (x + y + succ zero))
   p0 x y (succ z) = p0' x y z
 
-
-z+-assoc (neg x) (neg y) (neg z) = ≡-cong2 (λ q → neg (q + succ zero)) (p0 x y z)
+z+-assoc (neg x) (neg y) (neg z) = p0 x y z
   where
-  p0''' : (a b c d : Nat) → a + b + c + d ≡ a + (b + c + d)
-  p0''' zero b c d = refl (b + c + d)
-  p0''' (succ a) b c d = ≡-cong succ (p0''' a b c d)
+  +-assoc4 : (a b c d : Nat) → a + b + c + d ≡ a + c + b + d
+  +-assoc4 zero b c d = ≡-cong (λ q → q + d) (+-comm b c)
+  +-assoc4 (succ a) b c d = ≡-cong succ (+-assoc4 a b c d)
 
-  p0'' : (a b c : Nat) → a + b + c ≡ a + c + b
-  p0'' zero b c = +-comm b c
-  p0'' (succ a) b c = ≡-cong succ (p0'' a b c)
+  p0' : {a b : Nat} → neg a ≡ neg b → neg (succ a) ≡ neg (succ b)
+  p0' {a} {b} (refl (neg .a)) = refl (neg (succ a))
 
-  p0' : (a b c d : Nat) → a + (b + c + d) ≡ a + (b + d + c)
-  p0' a b c d = ≡-cong (λ q → a + q) (p0'' b c d)
-
-  p0 : (x y z : Nat) → x + y + succ zero + z ≡ x + (y + z + succ zero)
-  p0 x y z = ≡-trans (p0''' x y (succ zero) z) (p0' x y (succ zero) z)
+  p0 : (x y z : Nat) → ((neg x +ᵢ neg y) +ᵢ neg z) ≡ (neg x +ᵢ (neg y +ᵢ neg z))
+  p0 zero     y z = ≡-cong2 (λ q → neg q) (+-assoc4 y (succ zero) z (succ zero))
+  p0 (succ x) y z = p0' (p0 x y z)

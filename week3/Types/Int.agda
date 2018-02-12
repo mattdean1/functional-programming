@@ -1,5 +1,6 @@
 module Types.Int where
 
+open import Types.Equality
 open import Types.Nat
 
 data Int : Set where
@@ -24,6 +25,9 @@ zero - zero = pos zero
 zero - succ y = neg y
 succ x - zero = pos (succ x)
 succ x - succ y = x - y
+
+minus-cong : {a b : Nat} → a ≡ b → (c : Nat) → c - a ≡ c - b
+minus-cong {.x} {.x} (refl x) c = refl (c - x)
 
 -- Define addition and subtraction for integers.
 _+ᵢ_ : Int → Int → Int

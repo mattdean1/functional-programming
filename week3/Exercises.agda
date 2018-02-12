@@ -213,20 +213,17 @@ z+-assoc (neg x) (pos y) (neg z) = p0 x y z
 z+-assoc (neg x) (neg y) (pos z) = p0 x y z
   where
   p0'' : (a b c : Nat) → a + (succ b) + c ≡ succ (a + b + c)
-  p0'' zero b c = refl (succ (b + c))
+  p0'' zero     b c = refl (succ (b + c))
   p0'' (succ a) b c = ≡-cong succ (p0'' a b c)
 
-  p0''' : (x y z : Nat) → (succ z - (x + succ y + succ zero)) ≡ (z - (x + y + succ zero))
-  p0''' x y z = ≡-cong2 (λ q → (succ z) - q) (p0'' x y (succ zero))
-
   p0' : (x y z : Nat) → (z - (x + y + succ zero)) ≡ (neg x +ᵢ (z - y))
-  p0' x zero zero = ≡-trans (≡-cong2 (λ q → zero - q) (+-succ2 (x + zero))) (≡-cong2 neg (+-unit2 x))
-  p0' x (succ y) zero = ≡-cong2 (λ q → zero - q) (p0'' x y (succ zero))
-  p0' x zero (succ z) = ≡-cong2 (λ q → (succ z) - q) (≡-trans (+-succ2 (x + zero)) (≡-cong succ (+-unit2 x)))
-  p0' x (succ y) (succ z) = ≡-trans (p0''' x y z) (p0' x y z)
+  p0' x zero     zero     = ≡-trans (minus-cong (+-succ2 (x + zero)) zero) (≡-cong2 neg (+-unit2 x))
+  p0' x zero     (succ z) = minus-cong (≡-trans (+-succ2 (x + zero)) (≡-cong succ (+-unit2 x))) (succ z)
+  p0' x (succ y) zero     = minus-cong (p0'' x y (succ zero)) zero
+  p0' x (succ y) (succ z) = ≡-trans (minus-cong (p0'' x y (succ zero)) (succ z)) (p0' x y z)
 
-  p0 : (x y z : Nat) → (z - succ (x + y + succ zero)) ≡ (neg x +ᵢ (z - succ y))
-  p0 x y zero = refl (neg (x + y + succ zero))
+  p0 : (x y z : Nat) → ((neg x +ᵢ neg y) +ᵢ pos z) ≡ (neg x +ᵢ (neg y +ᵢ pos z))
+  p0 x y zero     = refl (neg (x + y + succ zero))
   p0 x y (succ z) = p0' x y z
 
 z+-assoc (neg x) (neg y) (neg z) = p0 x y z

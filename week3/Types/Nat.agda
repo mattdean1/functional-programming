@@ -22,9 +22,28 @@ infixl 5 _+_
 +-cong : {a b : Nat} → a ≡ b → (n : Nat) → a + n ≡ b + n
 +-cong p n = ≡-cong (λ x → x + n) p
 
-+-succ1 : (a b : Nat) → a + succ b ≡ succ (a + b)
-+-succ1 zero b = refl (succ b)
-+-succ1 (succ a) b = ≡-cong succ (+-succ1 a b)
++-cong2 : {a b x y : Nat} → a ≡ b → x ≡ y → a + x ≡ b + y
++-cong2 (refl a) (refl x) = refl (a + x)
+
++-succ-dist : (a b : Nat) → succ (a + b) ≡ a + succ b
++-succ-dist zero b = refl (succ b)
++-succ-dist (succ a) b = ≡-cong succ (+-succ-dist a b)
+
++-succ-swap : (a b : Nat) → (succ a) + b ≡ a + succ b
++-succ-swap a b = +-succ-dist a b
 
 +-succ2 : (a : Nat) → a + succ zero ≡ succ a
-+-succ2 a = ≡-trans (+-succ1 a zero) (≡-cong succ (+-unit2 a))
++-succ2 zero = refl (succ zero)
++-succ2 (succ a) = ≡-cong succ (+-succ2 a)
+
+
+
+
+
+_*_ : Nat → Nat → Nat
+zero     * n = zero
+(succ m) * n = (m * n) + n
+
+*-zero : (n : Nat) → n * zero ≡ zero
+*-zero zero = refl zero
+*-zero (succ n) = +-unit2p (*-zero n)

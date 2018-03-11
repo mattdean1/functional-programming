@@ -46,7 +46,7 @@ reverse-inv (x :: xs) = ≡-trans (a≡b x (reverse xs)) (b≡c x xs)
   ≡ fast-reverse l
 
 
-  p:
+  p0:
     (reverse l1) ++ l2
   ≡ (reverse (x :: xs)) ++ l2
   ≡ ((reverse xs) ++ [ x ]) ++ l2   - definition of reverse

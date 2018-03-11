@@ -1,7 +1,5 @@
 module Types.Nat where
 
-open import Types.Equality
-
 data Nat : Set where
   zero : Nat
   succ  : Nat → Nat

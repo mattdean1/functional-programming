@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 module Properties.Nat.Multiplication where
 
 open import Types.Equality

@@ -3,7 +3,8 @@ module Exercises2 where
 open import Types.Equality
 open import Types.Nat
 open import Types.Int
-open import Exercises1
+
+open import Properties.Nat.Addition
 
 -- Show that (Int, +ᵢ, 0, negate) forms an abelian group.
 -- (Type, Operation, Identity, Inverse)
@@ -28,7 +29,7 @@ open import Exercises1
 -- Identity
 -- the identity element is pos zero
 z+-id1 : (a : Int) → a +ᵢ pos zero ≡ a
-z+-id1 (pos x) = ≡-cong2 (λ q → pos q) (+-unit2 x)
+z+-id1 (pos x) = ≡-cong2 (λ q → pos q) (+-unitr x)
 z+-id1 (neg x) = refl (neg x)
 
 z+-id2 : (a : Int) → (pos zero) +ᵢ a ≡ a
@@ -74,7 +75,7 @@ z+-assoc (pos x) (pos y) (neg z) = p0 x y (succ z)
   p0''' zero zero = refl (pos zero)
   p0''' zero (succ b) = refl (neg b)
   p0''' (succ a) zero = refl (pos (succ (a + zero)))
-  p0''' (succ a) (succ b) = ≡-cong2 (λ q → q - b) (+-unit2 a)
+  p0''' (succ a) (succ b) = ≡-cong2 (λ q → q - b) (+-unitr a)
 
   p0 : (x y z : Nat) → ((x + y) - z) ≡ (pos x +ᵢ (y - z))
   p0 x    y    zero = ≡-trans (p0' x y) (p0'' x y)
@@ -120,7 +121,7 @@ z+-assoc (pos x) (neg y) (pos z) = p0 x (succ y) z
 
     lem : (a b c : Nat) → (pos a +ᵢ (c - b)) ≡ (pos (succ a) +ᵢ (c - succ b))
     lem zero     zero     zero = refl (pos zero)
-    lem (succ a) zero     zero = ≡-cong2 (λ q → pos (succ q)) (+-unit2 a)
+    lem (succ a) zero     zero = ≡-cong2 (λ q → pos (succ q)) (+-unitr a)
     lem a        (succ b) zero = refl (a - succ b)
     lem a        zero     (succ c) = lem' a c
     lem a        (succ b) (succ c) = lem a b c
@@ -132,8 +133,8 @@ z+-assoc (pos x) (neg y) (neg z) = p0 x y z
   p0' (succ a) = refl (a - zero)
 
   p0'' : (a b : Nat) → (a - succ (b + succ zero)) ≡ ((a - zero) +ᵢ neg (succ b))
-  p0'' zero b = ≡-cong2 neg (+-succ2 b)
-  p0'' (succ a) b = ≡-cong2 (λ q → a - q) (+-succ2 b)
+  p0'' zero b = ≡-cong2 neg (+-add-one b)
+  p0'' (succ a) b = ≡-cong2 (λ q → a - q) (+-add-one b)
 
   p0 : (x y z : Nat) → ((x - succ y) +ᵢ neg z) ≡ (x - succ (y + z + succ zero))
   p0 zero y z = refl (neg (y + z + succ zero))
@@ -149,7 +150,7 @@ z+-assoc (neg x) (pos y) (pos z) = p0 x y z
   p0' (succ a) b = refl (pos (succ (a + b)))
 
   p0 : (x y z : Nat) → ((y - succ x) +ᵢ pos z) ≡ ((y + z) - succ x)
-  p0 x        y         zero    = ≡-trans (z+-id1 (y - succ x)) (≡-sym (≡-cong2 (λ q → q - (succ x)) (+-unit2 y)))
+  p0 x        y         zero    = ≡-trans (z+-id1 (y - succ x)) (≡-sym (≡-cong2 (λ q → q - (succ x)) (+-unitr y)))
   p0 x        zero     (succ z) = refl (z - x)
   p0 zero     (succ y) z        = p0' y z
   p0 (succ x) (succ y) z        = p0 x y z
@@ -165,20 +166,20 @@ z+-assoc (neg x) (pos y) (neg z) = p0 x y z
   p0''' a (succ b) = refl (b - a)
 
   p0' : (a b c : Nat) → neg a +ᵢ (b - succ c) ≡ neg (succ a) +ᵢ (b - c)
-  p0' a zero zero = ≡-cong2 neg (≡-trans (+-succ2 (a + zero)) (≡-cong succ (+-unit2 a)))
+  p0' a zero zero = ≡-cong2 neg (≡-trans (+-add-one (a + zero)) (≡-cong succ (+-unitr a)))
   p0' a zero (succ c) = ≡-cong2 neg (p0'' a c (succ zero))
   p0' a (succ b) zero = p0''' a b
   p0' a (succ b) (succ c) = p0' a b c
 
   p05' : (a b : Nat) → (a - succ b) ≡ (neg zero +ᵢ (a - b))
   p05' zero zero = refl (neg zero)
-  p05' zero (succ b) = ≡-cong2 neg (≡-sym (+-succ2 b))
+  p05' zero (succ b) = ≡-cong2 neg (≡-sym (+-add-one b))
   p05' (succ a) zero = refl (a - zero)
   p05' (succ a) (succ b) = p05' a b
 
   p04' : (a b : Nat) → ((a - zero) +ᵢ neg b) ≡ (neg zero +ᵢ (a - b))
   p04' zero zero = refl (neg zero)
-  p04' zero (succ b) = ≡-cong2 neg (≡-sym (+-succ2 b))
+  p04' zero (succ b) = ≡-cong2 neg (≡-sym (+-add-one b))
   p04' (succ a) zero = refl (a - zero)
   p04' (succ a) (succ b) = p05' a b
 
@@ -194,8 +195,8 @@ z+-assoc (neg x) (neg y) (pos z) = p0 x y z
   p0'' (succ a) b c = ≡-cong succ (p0'' a b c)
 
   p0' : (x y z : Nat) → (z - (x + y + succ zero)) ≡ (neg x +ᵢ (z - y))
-  p0' x zero     zero     = ≡-trans (minus-cong (+-succ2 (x + zero)) zero) (≡-cong2 neg (+-unit2 x))
-  p0' x zero     (succ z) = minus-cong (≡-trans (+-succ2 (x + zero)) (≡-cong succ (+-unit2 x))) (succ z)
+  p0' x zero     zero     = ≡-trans (minus-cong (+-add-one (x + zero)) zero) (≡-cong2 neg (+-unitr x))
+  p0' x zero     (succ z) = minus-cong (≡-trans (+-add-one (x + zero)) (≡-cong succ (+-unitr x))) (succ z)
   p0' x (succ y) zero     = minus-cong (p0'' x y (succ zero)) zero
   p0' x (succ y) (succ z) = ≡-trans (minus-cong (p0'' x y (succ zero)) (succ z)) (p0' x y z)
 
@@ -205,13 +206,9 @@ z+-assoc (neg x) (neg y) (pos z) = p0 x y z
 
 z+-assoc (neg x) (neg y) (neg z) = p0 x y z
   where
-  +-assoc4 : (a b c d : Nat) → a + b + c + d ≡ a + c + b + d
-  +-assoc4 zero b c d = ≡-cong (λ q → q + d) (+-comm b c)
-  +-assoc4 (succ a) b c d = ≡-cong succ (+-assoc4 a b c d)
-
   p0' : {a b : Nat} → neg a ≡ neg b → neg (succ a) ≡ neg (succ b)
   p0' {a} {b} (refl (neg .a)) = refl (neg (succ a))
 
   p0 : (x y z : Nat) → ((neg x +ᵢ neg y) +ᵢ neg z) ≡ (neg x +ᵢ (neg y +ᵢ neg z))
-  p0 zero     y z = ≡-cong2 (λ q → neg q) (+-assoc4 y (succ zero) z (succ zero))
+  p0 zero     y z = ≡-cong2 (λ q → neg q) (+-comm4 y (succ zero) z (succ zero))
   p0 (succ x) y z = p0' (p0 x y z)

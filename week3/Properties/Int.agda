@@ -1,4 +1,4 @@
-module Exercises2 where
+module Properties.Int where
 
 open import Types.Equality
 open import Types.Nat
@@ -6,27 +6,7 @@ open import Types.Int
 
 open import Properties.Nat.Addition
 
--- Show that (Int, +ᵢ, 0, negate) forms an abelian group.
--- (Type, Operation, Identity, Inverse)
-{-
-  Group axioms:
-    Closure
-      ∀ (a b ∈ G), (a∘b) ∈ G
-    Associativity
-      ∀ (a b c ∈ G), (a ∘ b) ∘ c ≡ a ∘ (b ∘ c)
-    Identity
-      ∃ i ∈ G, ∀ a ∈ G, a ∘ i ≡ i ∘ a ≡ a
-    Inverse
-      ∀ a ∈ G, ∃ a⁻¹ ∈ G, a ∘ a⁻¹ ≡ a⁻¹ ∘ a ≡ i where i is the identity element
 
-  An Abelian group is also commutative:
-    ∀ (a b ∈ G), a ∘ b ≡ b ∘ a
--}
-
--- Closure is satisfied by the type signature of +ᵢ
--- _+ᵢ_ : Int → Int → Int
-
--- Identity
 -- the identity element is pos zero
 z+-id1 : (a : Int) → a +ᵢ pos zero ≡ a
 z+-id1 (pos x) = ≡-cong2 (λ q → pos q) (+-unitr x)
@@ -36,7 +16,7 @@ z+-id2 : (a : Int) → (pos zero) +ᵢ a ≡ a
 z+-id2 (pos x) = refl (pos x)
 z+-id2 (neg x) = refl (neg x)
 
--- Inverse
+
 -- the inverse of x is negate x
 z+-inv1 : (a : Int) → a +ᵢ negate a ≡ pos zero
 z+-inv1 (pos zero) = refl (pos zero)
@@ -49,6 +29,7 @@ z+-inv2 (pos zero) = refl (pos zero)
 z+-inv2 (pos (succ x)) = z+-inv2 (neg x)
 z+-inv2 (neg zero) = refl (pos zero)
 z+-inv2 (neg (succ x)) = z+-inv2 (neg x)
+
 
 -- Commutativity
 z+-comm : (a b : Int) → a +ᵢ b ≡ b +ᵢ a

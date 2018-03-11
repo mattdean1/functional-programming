@@ -29,18 +29,37 @@ open import Properties.Nat.Addition
 *-zeror a = refl zero
 
 
+-- multiplication is distributive over addition
+*-distl : (a b c : Nat) → a * (b + c) ≡ (a * b) + (a * c)
+*-distl zero b c = refl zero
+*-distl (succ a) b c
+  = begin
+    (a * (b + c)) + (b + c)       ≡⟨ ≡-cong (λ q → q + (b + c)) (*-distl a b c) ⟩
+    (a * b) + (a * c) + (b + c)   ≡⟨ +-assoc (a * b) (a * c) (b + c) ⟩
+    (a * b) + ((a * c) + (b + c)) ≡⟨ ≡-cong (λ q → (a * b) + q) (≡-sym (+-assoc (a * c) b c)) ⟩
+    (a * b) + ((a * c) + b + c)   ≡⟨ +-assoc4 (a * b) (a * c) b c ⟩
+    (a * b) + (a * c) + b + c     ≡⟨ +-comm4 (a * b) (a * c) b c ⟩
+    (a * b) + b + (a * c) + c     ≡⟨ +-assoc ((a * b) + b) (a * c) c ⟩
+    (a * b) + b + ((a * c) + c)
+    ∎
+
+*-distr : (a b c : Nat) → (a + b) * c ≡ (a * c) + (b * c)
+*-distr zero b c = refl (b * c)
+*-distr (succ a) b c
+  = begin
+    ((a + b) * c) + c         ≡⟨ ≡-cong (λ q → q + c) (*-distr a b c) ⟩
+    (a * c) + (b * c) + c     ≡⟨ +-assoc (a * c) (b * c) c ⟩
+    (a * c) + ((b * c) + c)   ≡⟨ +-cong2 (refl (a * c)) (+-comm (b * c) c) ⟩
+    (a * c) + (c + (b * c))   ≡⟨ ≡-sym (+-assoc (a * c) c (b * c)) ⟩
+    (a * c) + c + (b * c)
+    ∎
+
 -- multiplication is associative
 *-assoc : (a b c : Nat) → (a * b) * c ≡ a * (b * c)
-*-assoc zero b c = refl zero
-*-assoc (succ a) b zero = p1 b (≡-trans (*-zerol ((a * b) + b)) (p0 a b))
-  where
-  p0 : (a b : Nat) → zero ≡ a * (b * zero)
-  p0 a b = ≡-trans (≡-sym (*-zerol a)) (≡-cong (λ x → a * x) (≡-sym (*-zerol b)))
-
-  p1 : {a b : Nat} → (x : Nat) → a ≡ b → a ≡ b + (x * zero)
-  p1 {a} {b} x p = p1' a b zero (x * zero) (≡-sym (+-unitrp (≡-sym p))) (≡-sym (*-zerol x))
-    where
-    p1' : (a b x y : Nat) → a ≡ b + x → x ≡ y → a ≡ b + y
-    p1' a b .x y p (refl x) = p
-
-*-assoc (succ a) b (succ c) = {!   !}
+*-assoc zero     b c = refl zero
+*-assoc (succ a) b c
+  = begin
+      (((a * b) + b) * c)      ≡⟨ *-distr (a * b) b c ⟩
+      ((a * b) * c) + (b * c)  ≡⟨ ≡-cong (λ z → z + (b * c)) (*-assoc a b c) ⟩
+      (a * (b * c)) + (b * c)
+      ∎

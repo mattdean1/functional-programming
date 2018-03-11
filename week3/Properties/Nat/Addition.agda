@@ -17,7 +17,7 @@ open import Types.Nat
 
 
 -- addition is associative
-+-assoc : (x y z : Nat) → (x + y) + z ≡ x + (y + z)
++-assoc : (x y z : Nat) → x + y + z ≡ x + (y + z)
 +-assoc zero y z = refl (y + z)
 +-assoc (succ x) y z = ≡-cong succ (+-assoc x y z)
 

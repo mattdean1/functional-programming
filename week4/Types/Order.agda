@@ -38,3 +38,16 @@ data _<=p_ : Nat → Nat → Set where
 <=-same : {a b : Nat} → a <=p b → b <=p a → a ≡ b
 <=-same (zero<=p .zero) (zero<=p .zero) = refl zero
 <=-same (succ<=p x y p1) (succ<=p .y .x p2) = ≡-cong succ (<=-same p1 p2)
+
+
+<=-succ1 : {a b : Nat} → a <=p b → (succ a) <=p (succ b)
+<=-succ1 (zero<=p x) = succ<=p zero x (zero<=p x)
+<=-succ1 (succ<=p x y p) = succ<=p (succ x) (succ y) (<=-succ1 p)
+
+<=-succ2 : {a b : Nat} → a <=p b → a <=p (succ b)
+<=-succ2 (zero<=p x) = zero<=p (succ x)
+<=-succ2 (succ<=p x y p) = succ<=p x (succ y) (<=-succ2 p)
+
+≡-><=p : {a b : Nat} → a ≡ b → a <=p b
+≡-><=p (refl zero) = zero<=p zero
+≡-><=p (refl (succ a)) = succ<=p a a (≡-><=p (refl a))

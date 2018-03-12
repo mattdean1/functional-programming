@@ -3,6 +3,9 @@ module Exercises where
 open import Types.Nat
 open import Types.Bool
 open import Types.Equality
+open import Types.Reasoning
+
+open import Properties.Nat.Addition
 
 open import Types.Inspect
 open import Types.Order
@@ -92,6 +95,83 @@ dist-m2 m n | false | true | equiv mn | equiv nm = refl (m - n)
 dist-m2 m n | false | false | equiv mn | equiv nm = m2-lemma (<=-comp2 m n mn) (<=-comp2 n m nm)
 
 
+
+
+
+dist-zero : (a : Nat) → dist a zero ≡ a
+dist-zero zero = refl zero
+dist-zero (succ a) = refl (succ a)
+
+dist-zero' : (a : Nat) → dist zero a ≡ a
+dist-zero' zero = refl zero
+dist-zero' (succ a) = refl (succ a)
+
+
+dist<=p+lemma : {a b : Nat} → a <=p b → a <=p succ (succ b)
+dist<=p+lemma (zero<=p x) = zero<=p (succ (succ x))
+dist<=p+lemma (succ<=p x y p) = succ<=p x (succ (succ y)) (dist<=p+lemma p)
+
+dist<=p+ : (a b : Nat) → (dist a b) <=p (a + b)
+dist<=p+ a b with (a <= b) | inspect (suspend (_<=_ a) b)
+dist<=p+ a b | true | i = lem a b
+  where
+    lem : (x y : Nat) → (y - x) <=p (x + y)
+    lem zero zero = zero<=p zero
+    lem zero (succ y) = succ<=p y y (≡-><=p (refl y))
+    lem (succ x) zero = zero<=p (succ (x + zero))
+    lem (succ x) (succ y) = <=-trans' (dist<=p+lemma (lem x y)) (≡-><=p (≡-cong succ (+-succ-dist x y)))
+
+dist<=p+ a b | false | i = lem a b
+  where
+    lem : (x y : Nat) → (x - y) <=p (x + y)
+    lem zero zero = zero<=p zero
+    lem zero (succ y) = zero<=p (succ y)
+    lem (succ x) zero = ≡-><=p (≡-cong succ (≡-sym (+-unitr x)))
+    lem (succ x) (succ y) = <=-trans' (dist<=p+lemma (lem x y)) (≡-><=p (≡-cong succ (+-succ-dist x y)))
+
+dist-succ : (a b : Nat) → (dist a b) ≡ (dist (succ a) (succ b))
+dist-succ zero zero = refl zero
+dist-succ zero (succ b) = refl (succ b)
+dist-succ (succ a) zero = refl (succ a)
+dist-succ (succ a) (succ b) = refl (if a <= b then b - a else (a - b))
+
 --   dist m n <= dist m p + dist p n
 dist-m3 : (a b c : Nat) → (dist a b) <=p ((dist a c) + (dist c b))
-dist-m3 a b c = {!   !}
+dist-m3 zero zero zero = zero<=p zero
+dist-m3 zero zero (succ c) = zero<=p (succ (c + succ c))
+dist-m3 zero (succ b) zero = ≡-><=p (refl (dist zero (succ b)))
+dist-m3 zero (succ b) (succ c)
+  = <=begin
+      dist zero (succ b)                  <=⟨ (≡-><=p (refl (succ b))) ⟩
+      succ b                              <=⟨ <=-succ1 (≡-><=p (≡-sym (dist-zero' b))) ⟩ -- could also apply succ before converting ≡ to <=p
+      succ (dist zero b)                  <=⟨ <=-succ1 (dist-m3 zero b c) ⟩
+      succ ((dist zero c) + dist c b)     <=⟨ <=-succ1 (≡-><=p (+-cong (dist-zero' c) (dist c b))) ⟩
+      succ (c + dist c b)                 <=⟨ <=-succ1 (≡-><=p (+-cong2 (refl c) (dist-succ c b))) ⟩
+      succ (c + dist (succ c) (succ b))
+    <=∎
+
+dist-m3 (succ a) zero zero = ≡-><=p (lem a) where
+  lem : (a : Nat) → dist (succ a) zero ≡ succ (a + dist zero zero)
+  lem a
+    = begin
+      dist (succ a) zero        ≡⟨ refl (succ a) ⟩
+      (succ a)                  ≡⟨ ≡-sym (≡-cong succ (+-unitr a)) ⟩
+      (succ a) + zero           ≡⟨ refl (succ (a + zero)) ⟩
+      succ (a + zero)           ≡⟨ refl (succ (a + zero)) ⟩
+      succ (a + dist zero zero)
+    ∎
+
+dist-m3 (succ a) zero (succ c)
+  = <=begin
+      dist (succ a) zero                              <=⟨ ≡-><=p (dist-zero (succ a)) ⟩
+      succ a                                          <=⟨ ≡-><=p (≡-cong succ (≡-sym (dist-zero a))) ⟩
+      succ (dist a zero)                              <=⟨ <=-succ1 (dist-m3 a zero c) ⟩
+      succ (dist a c + dist c zero)                   <=⟨ ≡-><=p (≡-cong succ (+-cong2 (refl (dist a c)) (dist-zero c))) ⟩
+      succ (dist a c + c)                             <=⟨ ≡-><=p (+-succ-dist (dist a c) c) ⟩
+      dist a c + succ c                               <=⟨ ≡-><=p (+-cong2 (dist-succ a c) (refl (succ c))) ⟩
+      (dist (succ a) (succ c) + (succ c))             <=⟨ ≡-><=p (+-cong2 (refl (dist (succ a) (succ c))) (≡-sym (dist-zero (succ c)))) ⟩
+      (dist (succ a) (succ c) + dist (succ c) zero)
+    <=∎
+
+dist-m3 (succ a) (succ b) zero = dist<=p+ (succ a) (succ b)
+dist-m3 (succ a) (succ b) (succ c) = dist-m3 a b c

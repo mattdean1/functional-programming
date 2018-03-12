@@ -1,4 +1,4 @@
-module Properties.Nat.Addition where
+module Properties.Addition where
 
 open import Types.Equality
 open import Types.Nat

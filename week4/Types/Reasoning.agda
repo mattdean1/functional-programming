@@ -1,9 +1,9 @@
 module Types.Reasoning where
 
 open import Types.Equality
-
 open import Types.Nat
 open import Types.Order
+open import Properties.Order
 
 
 begin_ : {A : Set} {x y : A} → x ≡ y → x ≡ y

@@ -25,15 +25,15 @@ min-hom m n | false = refl (succ n)
 min-mono : (a b c d : Nat) → a <=p b → c <=p d → (min a c) <=p (min b d)
 min-mono a b c d p1 p2 with (a <= c) | (b <= d) | inspect (suspend (_<=_ a) c) | inspect (suspend (_<=_ b) d)
 min-mono a b c d p1 p2 | true | true | comp1 | comp2 = p1
-min-mono a b c d p1 p2 | true | false | s_equiv ac | comp2 = <=-trans a c d (<=-comp1 a c ac) p2
-min-mono a b c d p1 p2 | false | true | s_equiv ac | comp2 = <=-trans c a b (<=-comp2 a c ac) p1
+min-mono a b c d p1 p2 | true | false | equiv ac | comp2 = <=-trans a c d (<=-comp1 a c ac) p2
+min-mono a b c d p1 p2 | false | true | equiv ac | comp2 = <=-trans c a b (<=-comp2 a c ac) p1
 min-mono a b c d p1 p2 | false | false | comp1 | comp2 = p2
 
 max-mono : (a b c d : Nat) → a <=p b → c <=p d → (max a c) <=p (max b d)
 max-mono a b c d p1 p2 with (a <= c) | (b <= d) | inspect (suspend (_<=_ a) c) | inspect (suspend (_<=_ b) d)
 max-mono a b c d p1 p2 | true | true | comp1 | comp2 = p2
-max-mono a b c d p1 p2 | true | false | comp1 | s_equiv bd = <=-trans' p2 (<=-comp2 b d bd)
-max-mono a b c d p1 p2 | false | true | comp1 | s_equiv bd = <=-trans' p1 (<=-comp1 b d bd)
+max-mono a b c d p1 p2 | true | false | comp1 | equiv bd = <=-trans' p2 (<=-comp2 b d bd)
+max-mono a b c d p1 p2 | false | true | comp1 | equiv bd = <=-trans' p1 (<=-comp1 b d bd)
 max-mono a b c d p1 p2 | false | false | comp1 | comp2 = p1
 
 

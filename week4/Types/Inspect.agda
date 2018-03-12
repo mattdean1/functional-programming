@@ -22,17 +22,17 @@ force f = f unit
 
 -- equivalence type for suspended computations and their result
 data _≈_ {A : Set} (x : Suspend A) (y : A) : Set where
-  s_equiv : (force x) ≡ y → x ≈ y
+  equiv : (force x) ≡ y → x ≈ y
 
 -- take a look at the result of the suspended computation
 inspect : {A : Set} (x : Suspend A) → x ≈ (force x)
-inspect f = s_equiv (refl (f unit))
+inspect f = equiv (refl (f unit))
 
 
 -- Usage
 -- Note that you must pattern match with both (f x) and (inspect (suspend f x)) for agda to resolve things properly
 foo : {A B : Set} (f : A → B) (x : A) → B
 foo f x with f x | inspect (suspend f x)
-foo f x | result | s_equiv p = result where
+foo f x | result | equiv p = result where
     p0 : f x ≡ result
     p0 = p

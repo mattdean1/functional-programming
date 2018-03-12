@@ -45,11 +45,53 @@ Consider the following definition of subtraction on Nat:
   succ m - zero = succ m
   succ m - succ n = m - n
 And consider the following definition of a distance between two Nats:
-  δ : Nat → Nat → Nat
-  δ m n = if m <= n then (n - m) else (m - n)
-Show that δ is a metric, that is
+  dist : Nat → Nat → Nat
+  dist m n = if m <= n then (n - m) else (m - n)
+Show that dist is a metric, that is
 the following conditions are satisfied:
-  δ m n = 0 if and only if m = n
-  δ m n = δ n m
-  δ m n <= δ m p + δ p n
+  dist m n = 0 if and only if m = n
+  dist m n = dist n m
+  dist m n <= dist m p + dist p n
 -}
+
+_-_ : Nat → Nat → Nat
+zero - zero = zero
+zero - succ n = zero
+succ m - zero = succ m
+succ m - succ n = m - n
+
+minus-same : {a b : Nat} → a ≡ b → a - b ≡ zero
+minus-same (refl zero) = refl zero
+minus-same (refl (succ a)) = minus-same (refl a)
+
+
+dist : Nat → Nat → Nat
+dist m n = if m <= n then (n - m) else (m - n)
+
+
+dist-m1 : (m n : Nat) → m ≡ n → dist m n ≡ zero
+dist-m1 m n p with (m <= n)
+dist-m1 m n p | true = minus-same (≡-sym p)
+dist-m1 m n p | false  = minus-same p
+
+dist-m1' : (m n : Nat) → dist m n ≡ zero → m ≡ n
+dist-m1' zero zero p = refl zero
+dist-m1' zero (succ n) ()
+dist-m1' (succ m) zero p = p
+dist-m1' (succ m) (succ n) p = ≡-cong succ (dist-m1' m n p)
+
+
+m2-lemma : {m n : Nat} → m <=p n → n <=p m → n - m ≡ m - n
+m2-lemma p1 p2 = ≡-trans (minus-same (<=-same p2 p1)) (≡-sym (minus-same (<=-same p1 p2)))
+
+dist-m2 : (m n : Nat) → (dist m n) ≡ (dist n m)
+dist-m2 m n with (m <= n) | (n <= m) | inspect (suspend (_<=_ m) n) | inspect (suspend (_<=_ n) m)
+dist-m2 m n | true | true | equiv mn | equiv nm = m2-lemma (<=-comp1 m n mn) (<=-comp1 n m nm)
+dist-m2 m n | true | false | equiv mn | equiv nm = refl (n - m)
+dist-m2 m n | false | true | equiv mn | equiv nm = refl (m - n)
+dist-m2 m n | false | false | equiv mn | equiv nm = m2-lemma (<=-comp2 m n mn) (<=-comp2 n m nm)
+
+
+--   dist m n <= dist m p + dist p n
+dist-m3 : (a b c : Nat) → (dist a b) <=p ((dist a c) + (dist c b))
+dist-m3 a b c = {!   !}

@@ -34,3 +34,7 @@ data _<=p_ : Nat → Nat → Set where
 <=-trans' (zero<=p .zero) (zero<=p x) = zero<=p x
 <=-trans' (zero<=p .(succ x)) (succ<=p x y p2) = zero<=p (succ y)
 <=-trans' (succ<=p x y p1) (succ<=p .y y₁ p2) = succ<=p x y₁ (<=-trans' p1 p2)
+
+<=-same : {a b : Nat} → a <=p b → b <=p a → a ≡ b
+<=-same (zero<=p .zero) (zero<=p .zero) = refl zero
+<=-same (succ<=p x y p1) (succ<=p .y .x p2) = ≡-cong succ (<=-same p1 p2)

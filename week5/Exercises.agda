@@ -64,3 +64,14 @@ p2 .(succ (succ n)) (evensucc n p) = succ m , lem n m (proof IH) where
   m = witness IH
   lem : (x y : Nat) → x ≡ y + y → succ (succ x) ≡ (succ y) + (succ y)
   lem .(y + y) y (refl .(y + y)) = ≡-cong succ (+-succ-dist y y)
+
+{-
+Assuming that two functions f, g are equal f≡g, by definition, if and only if ∀ x, f(x)≡g(x)
+Formulate in Agda and prove the following property:
+For any functions f : X → A, f' : X → A', there exists a unique function  g ∶ X → A × A'
+  such that f ≡ π₁∘g and f' ≡ π₂ ∘ g
+  where -∘- is function compositions and π₁, π₂ are the projection functions from A × A'.
+-}
+
+data _func≡_ {A : Set} : (A → A) → (A → A) → Set where
+  refl≡ : (f : (A → A)) → f func≡ f
